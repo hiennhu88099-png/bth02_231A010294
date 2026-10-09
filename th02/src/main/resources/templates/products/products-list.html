@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Sản Phẩm - WebBanHang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+        }
+        .table > :not(caption) > * > * {
+            padding: 1rem 1rem;
+            vertical-align: middle;
+        }
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.875rem;
+        }
+        .price-badge {
+            font-weight: 600;
+            color: #0d6efd;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/products}">
+                <i class="bi bi-shop me-2"></i>WebBanHang
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active fw-bold" th:href="@{/products}">
+                            <i class="bi bi-box-seam me-1"></i>Sản Phẩm
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/categories}">
+                            <i class="bi bi-tags me-1"></i>Danh Mục
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container py-2">
+        <!-- Thông báo flash message -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <div>
+                    <h3 class="fw-bold mb-1"><i class="bi bi-box-seam text-primary me-2"></i>Quản Lý Sản Phẩm</h3>
+                    <p class="text-muted mb-0">Danh sách các sản phẩm đang có trong hệ thống</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a th:href="@{/categories}" class="btn btn-outline-primary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-tags"></i> Quản Lý Danh Mục
+                    </a>
+                    <a th:href="@{/products/add}" class="btn btn-primary d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-plus-circle"></i> Thêm Sản Phẩm Mới
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bảng sản phẩm -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 80px;">ID</th>
+                            <th scope="col">Tên Sản Phẩm</th>
+                            <th scope="col" style="width: 150px;">Đơn Giá</th>
+                            <th scope="col" style="width: 160px;">Danh Mục</th>
+                            <th scope="col">Mô Tả</th>
+                            <th scope="col" class="text-center" style="width: 180px;">Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(products)}">
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+                                Chưa có sản phẩm nào trong hệ thống. Hãy nhấn <strong>"Thêm Sản Phẩm Mới"</strong> để bắt đầu.
+                            </td>
+                        </tr>
+                        <tr th:each="product : ${products}">
+                            <td class="fw-semibold text-secondary" th:text="${product.id}">1</td>
+                            <td>
+                                <span class="fw-bold text-dark" th:text="${product.name}">Laptop Dell</span>
+                            </td>
+                            <td>
+                                <span class="price-badge" th:text="${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">15,000,000 đ</span>
+                            </td>
+                            <td>
+                                <span th:if="${product.category != null}" class="badge bg-primary-subtle text-primary border border-primary-subtle px-2 py-1" th:text="${product.category.name}">Laptop</span>
+                                <span th:if="${product.category == null}" class="badge bg-secondary-subtle text-secondary px-2 py-1">Chưa phân loại</span>
+                            </td>
+                            <td class="text-secondary small" th:text="${product.description}">Mô tả sản phẩm...</td>
+                            <td class="text-center">
+                                <a th:href="@{/products/edit/{id}(id=${product.id})}" 
+                                   class="btn btn-outline-warning btn-action me-1" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil-square"></i> Sửa
+                                </a>
+                                <a th:href="@{/products/delete/{id}(id=${product.id})}" 
+                                   class="btn btn-outline-danger btn-action" 
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');" 
+                                   title="Xóa sản phẩm">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
